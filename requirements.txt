@@ -1,0 +1,5 @@
+django==1.10
+textrankr
+bs4
+requests
+html2text

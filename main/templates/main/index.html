@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+
+<head>
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+
+    <script id="new_card" type="text/html">
+        <div class="col s12 m6 l3">
+            <div class="card">
+                <div class="card-image waves-effect waves-block waves-light">
+                    <img class="activator" id="card_first_image" />
+                </div>
+                <div class="card-content">
+                    <span class="card-title activator grey-text text-darken-4" id="card_name"></span>
+                </div>
+                <div class="card-reveal">
+                    <span class="card-title activator grey-text text-darken-4">3줄 요약<i class="material-icons right">close</i></span>
+                    <ul>
+                        <li id="card_line1">이상 것이다.보라, 그들의 역사를 가는 위하여 속에서 옷을 쓸쓸하랴?</li>
+                        <li id="card_line2">못하다 긴지라 인생을 이것을 것이다. 인간의 인간에 튼튼하며, 힘차게 불어 같이, 듣는다.</li>
+                        <li id="card_line3">황금시대의 얼마나 것이다.보라, 것이다. 인간은 없으면, 하여도 용기가 그들은 방지하는 청춘의 것이다.</li>
+                    </ul>
+                    <div class="card-action center">
+                        <a id="card_link" target="_blank">읽으러 가기</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script>
+        var first_time;
+        var done;
+        var index;
+        var user_hash;
+
+        function update() {
+            $.ajax({
+                url: "/update/",
+                type: "POST",
+                data: {
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    first_time: first_time,
+                    user_hash: user_hash,
+                    index: index
+                },
+                dataType: "json",
+                success: function(json) {
+                    if (json.done) done = true;
+                    if (json.new_one) {
+                        card = $($("#new_card").html());
+                        card.find("#card_name").text(json.title);
+                        card.find("#card_first_image").attr("src", json.image_url);
+                        card.find("#card_link").attr("href", json.url);
+                        card.find("#card_line1").text(json.line1);
+                        card.find("#card_line2").text(json.line2);
+                        card.find("#card_line3").text(json.line3);
+                        $("#card_rows").append(card);
+                        index += 1;
+                    }
+                    console.log(json);
+                    console.log("OK");
+                }
+            });
+        }
+
+        function loop() {
+            console.log("looping");
+            update();
+            first_time = false;
+            if (done == false) setTimeout("loop()", 1000);
+            else $("#loader").empty();
+        };
+
+        $(document).ready(function() {
+            first_time = true;
+            done = false;
+            index = 0;
+            user_hash = Math.random().toString(36).substring(2);
+            $("#loader").append("<div class=progress><div class=indeterminate></div></div>");
+            loop();
+        });
+    </script>
+    <style>
+        center {
+            font-family: Roboto;
+            font-weight: thin;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="light-green">
+            <div class="nav-wrapper">
+                <h1 class="center">Today3Line</h1>
+            </div>
+        </nav>
+        <div id="loader"></div>
+        <br>
+        <div class="row" id="card_rows">
+        </div>
+    </div>
+</body>
+
+</html>
