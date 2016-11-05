@@ -33,24 +33,38 @@
 
     <script>
         var first_time;
-        var done;
+        var url_list;
         var index;
-        var user_hash;
+        var url;
+        var timeout_time = 1000;
 
         function update() {
+            console.log($(".card").length)
+            console.log($(".card").length === index)
+            if (typeof url_list === 'undefined') {
+                url = '';
+            } else {
+                if (index < url_list.length) url = url_list[index];
+                else {
+                    index += 1;
+                    return;
+                }
+            }
             $.ajax({
                 url: "/update/",
                 type: "POST",
+                timeout: timeout_time,
                 data: {
                     csrfmiddlewaretoken: "{{ csrf_token }}",
                     first_time: first_time,
-                    user_hash: user_hash,
-                    index: index
+                    url: url,
                 },
                 dataType: "json",
                 success: function(json) {
-                    if (json.done) done = true;
-                    if (json.new_one) {
+                    if (first_time) {
+                        url_list = JSON.parse(json.url_list);
+                    } else if (typeof json.title !== 'undefined' && json.title.length !== 0 && $(".card").length === index) {
+                        console.log(index);
                         card = $($("#new_card").html());
                         card.find("#card_name").text(json.title);
                         card.find("#card_first_image").attr("src", json.image_url);
@@ -71,15 +85,17 @@
             console.log("looping");
             update();
             first_time = false;
-            if (done == false) setTimeout("loop()", 1000);
-            else $("#loader").empty();
+            if (typeof url_list === 'undefined') {
+                first_time = true;
+                setTimeout("loop()", timeout_time);
+            } else if (url_list.length > index) {
+                setTimeout("loop()", timeout_time);
+            } else $("#loader").empty();
         };
 
         $(document).ready(function() {
             first_time = true;
-            done = false;
             index = 0;
-            user_hash = Math.random().toString(36).substring(2);
             $("#loader").append("<div class=progress><div class=indeterminate></div></div>");
             loop();
         });

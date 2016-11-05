@@ -1,4 +1,4 @@
 from django.contrib import admin
-from main.models import Update
+from main.models import ParsedData
 
-admin.site.register(Update)
+admin.site.register(ParsedData)
