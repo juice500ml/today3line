@@ -2,31 +2,23 @@
 <html>
 
 <head>
-    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK" crossorigin="anonymous"></script>
 
     <script id="new_card" type="text/html">
-        <div class="col s12 m6 l3">
-            <div class="card">
-                <div class="card-image waves-effect waves-block waves-light">
-                    <img class="activator" id="card_first_image" />
-                </div>
-                <div class="card-content">
-                    <span class="card-title activator grey-text text-darken-4" id="card_name"></span>
-                </div>
-                <div class="card-reveal">
-                    <span class="card-title activator grey-text text-darken-4">3줄 요약<i class="material-icons right">close</i></span>
-                    <ul>
-                        <li id="card_line1"></li>
-                        <li id="card_line2"></li>
-                        <li id="card_line3"></li>
-                    </ul>
-                    <div class="card-action center">
-                        <a id="card_link" target="_blank">읽으러 가기</a>
-                    </div>
-                </div>
+        <div class="card">
+            <img class="card-img-top img-fluid" id="card_first_image" />
+            <div class="card-block">
+                <h3 class="card-title" id="card_name"></h3>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item" id="card_line1"></li>
+                <li class="list-group-item" id="card_line2"></li>
+                <li class="list-group-item" id="card_line3"></li>
+            </ul>
+            <div class="card-block" style="text-align: center;">
+                <a id="card_link" target="_blank">읽으러 가기</a>
             </div>
         </div>
     </script>
@@ -72,7 +64,7 @@
                         card.find("#card_line1").text(json.line1);
                         card.find("#card_line2").text(json.line2);
                         card.find("#card_line3").text(json.line3);
-                        $("#card_rows").append(card);
+                        $("#card_cols").append(card);
                         index += 1;
                     }
                     console.log(json);
@@ -90,35 +82,59 @@
                 setTimeout("loop()", timeout_time);
             } else if (url_list.length > index) {
                 setTimeout("loop()", timeout_time);
+                $("#done-bar").attr("value", index + 1);
+                $("#done-bar").attr("max", url_list.length);
             } else $("#loader").empty();
         };
 
         $(document).ready(function() {
             first_time = true;
             index = 0;
-            $("#loader").append("<div class=progress><div class=indeterminate></div></div>");
+            $("#loader").append("<progress value=\"0\" max=\"100\" id=\"done-bar\" class=\"progress progress-info\"></progress>");
             loop();
         });
     </script>
     <style>
-        center {
-            font-family: Roboto;
-            font-weight: thin;
+        #navbar-title {
+            text-align: center;
+            float: none;
+        }
+        
+        @media (min-width: 40em) {
+            .card-columns {
+                -webkit-column-count: 2;
+                -moz-column-count: 2;
+                column-count: 2;
+            }
+        }
+        
+        @media (min-width: 60em) {
+            .card-columns {
+                -webkit-column-count: 3;
+                -moz-column-count: 3;
+                column-count: 3;
+            }
+        }
+        
+        @media (min-width: 80em) {
+            .card-columns {
+                -webkit-column-count: 4;
+                -moz-column-count: 4;
+                column-count: 4;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <nav class="light-green">
-            <div class="nav-wrapper">
-                <h1 class="center">Today3Line</h1>
-            </div>
-        </nav>
-        <div id="loader"></div>
-        <br>
-        <div class="row" id="card_rows">
-        </div>
+    <nav class="navbar navbar-light bg-faded">
+        <h1 id="navbar-title">Today3Line</h1>
+    </nav>
+
+    <div id="loader"></div>
+    <br>
+
+    <div class="card-columns" id="card_cols">
     </div>
 </body>
 
