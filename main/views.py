@@ -18,29 +18,15 @@ def update(req):
 
         if req.POST.get('first_time') == 'true':
             urls = get_list()
-            for url in urls:
-                if not ParsedData.objects.filter(url = url):
-                    ParsedData.objects.create(
-                            url = url,
-                            title = '',
-                            image_url = '',
-                            line1 = '',
-                            line2 = '',
-                            line3 = '',
-                            dirty = False,
-                            )
             response['url_list'] = json.dumps(urls)
         else:
             wanting_url = req.POST.get('url')
-            print(wanting_url)
-            obj = ParsedData.objects.filter(url = wanting_url)[0]
-            if not obj.dirty:
-                obj.dirty = True
-                obj.save()
-
+            obj, is_created = ParsedData.objects.get_or_create(url = wanting_url)
+            if is_created:
                 param = parse_link(wanting_url)
                 obj.title = param[0]
-                obj.image_url = param[2]
+                if param[2]:
+                    obj.image_url = param[2]
                 obj.line1 = param[3][0]
                 obj.line2 = param[3][1]
                 obj.line3 = param[3][2]
