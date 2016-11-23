@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+
+<head>
+</head>
+
+<body>
+    <ol>
+        {% for post in posts %}
+            <li>
+                <p>{{ post.image_url }}</p>
+                <p>{{ post.title }}</p>
+                <p>{{ post.line1 }}</p>
+                <p>{{ post.line2 }}</p>
+                <p>{{ post.line3 }}</p>
+                <p>{{ post.url }}</p>
+            </li>
+        {% endfor %}
+    </ol>
+</body>
+
+</html>
